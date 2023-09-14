@@ -1,0 +1,28 @@
+{
+    "name": "dikki/config",
+    "description": "Write and Parse Config Files in YAML, JSON, INI or PHP Array format",
+    "keywords": [
+        "config",
+        "yaml",
+        "json",
+        "ini",
+        "php",
+        "array"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Naman Kumar",
+            "email": "namankumar80510@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "8.0 - 8.3",
+        "symfony/yaml": "^6.3"
+    },
+    "autoload": {
+      "psr-4": {
+        "Dikki\\Config\\": "src/"
+      }
+    }
+}
