@@ -36,7 +36,7 @@ echo $config->get('app.timezone');
 
 ## Supported Parsers
 
-- [x] PHP Array (Dikki\Config\PhpArrayParser)
-- [x] JSON (Dikki\Config\JsonParser)
-- [x] YAML (Dikki\Config\YamlParser)
-- [x] INI (Dikki\Config\IniParser)
+- PHP Array (Dikki\Config\PhpArrayParser)
+- JSON (Dikki\Config\JsonParser)
+- YAML (Dikki\Config\YamlParser)
+- INI (Dikki\Config\IniParser)
