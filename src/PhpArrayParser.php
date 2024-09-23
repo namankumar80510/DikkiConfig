@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dikki\Config;
 
 /**
@@ -13,8 +15,7 @@ namespace Dikki\Config;
  */
 class PhpArrayParser implements ConfigInterface
 {
-
-    private string|array $path;
+    private string $path;
 
     public function __construct(string $path)
     {
@@ -22,13 +23,12 @@ class PhpArrayParser implements ConfigInterface
     }
 
     /**
-     * parse php array file(s) and return an array
+     * Parse php array file(s) and return an array.
      *
-     * @return false|array
+     * @return array
      */
-    public function parse(): false|array
+    public function parse(): array
     {
-        // if a directory is passed, parse all php array files in it and return an array
         if (is_dir($this->path)) {
             $config = [];
             $files = scandir($this->path);
@@ -39,27 +39,29 @@ class PhpArrayParser implements ConfigInterface
             }
             return $config;
         } else {
-            // if a file is passed, parse it and return an array
             return require $this->path;
         }
     }
 
     /**
-     * get a value from the config array
+     * Get a value from the config array.
      *
      * Dot notation is supported, e.g. 'database.host' will return the value of $config['database']['host']
      *
      * @param string $key
+     * @param mixed $default
      * @return mixed
      */
-    public function get(string $key): mixed
+    public function get(string $key, mixed $default = null): mixed
     {
         $config = $this->parse();
         $keys = explode('.', $key);
         foreach ($keys as $key) {
+            if (!isset($config[$key])) {
+                return $default;
+            }
             $config = $config[$key];
         }
         return $config;
     }
-
 }

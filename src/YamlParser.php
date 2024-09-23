@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dikki\Config;
 
 use Symfony\Component\Yaml\Yaml;
@@ -7,16 +9,15 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class YamlParser
  *
- * This class takes either the path to an yaml file or a directory containing yaml files.
+ * This class takes either the path to a yaml file or a directory containing yaml files.
  * If a directory is passed, it will parse all yaml files in it and return an array.
  * Otherwise, it will parse the yaml file and return an array.
  *
  * @package Dikki\Config
  */
-class YamlParser implements \Dikki\Config\ConfigInterface
+class YamlParser implements ConfigInterface
 {
-
-    private string|array $path;
+    private string $path;
     private Yaml $yamlParser;
 
     public function __construct(string $path)
@@ -26,13 +27,12 @@ class YamlParser implements \Dikki\Config\ConfigInterface
     }
 
     /**
-     * parse yaml file(s) and return an array
+     * Parse yaml file(s) and return an array.
      *
-     * @return false|array
+     * @return array
      */
-    public function parse(): false|array
+    public function parse(): array
     {
-        // if a directory is passed, parse all yaml files in it and return an array
         if (is_dir($this->path)) {
             $config = [];
             $files = scandir($this->path);
@@ -43,30 +43,29 @@ class YamlParser implements \Dikki\Config\ConfigInterface
             }
             return $config;
         } else {
-            // if a file is passed, parse it and return an array
             return $this->yamlParser->parseFile($this->path);
         }
     }
 
     /**
-     * get a value from the config array
+     * Get a value from the config array.
      *
      * Dot notation is supported, e.g. 'database.host' will return the value of $config['database']['host']
      *
      * @param string $key
+     * @param mixed $default
      * @return mixed
      */
-    public function get(string $key): mixed
+    public function get(string $key, mixed $default = null): mixed
     {
         $config = $this->parse();
         $keys = explode('.', $key);
         foreach ($keys as $key) {
             if (!isset($config[$key])) {
-                return null;
+                return $default;
             }
             $config = $config[$key];
         }
         return $config;
     }
-
 }

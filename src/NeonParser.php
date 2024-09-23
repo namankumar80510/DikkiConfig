@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Dikki\Config;
 
+use Nette\Neon\Neon;
+
 /**
- * Class IniParser
+ * Class NeonParser
  *
- * This class takes either the path to an ini file or a directory containing ini files.
- * If a directory is passed, it will parse all ini files in it and return an array.
- * Otherwise, it will parse the ini file and return an array.
+ * This class takes either the path to a neon file or a directory containing neon files.
+ * If a directory is passed, it will parse all neon files in it and return an array.
+ * Otherwise, it will parse the neon file and return an array.
  *
  * @package Dikki\Config
  */
-class IniParser implements ConfigInterface
+class NeonParser implements ConfigInterface
 {
     private string $path;
 
@@ -23,7 +25,7 @@ class IniParser implements ConfigInterface
     }
 
     /**
-     * Parse ini file(s) and return an array.
+     * Parse neon file(s) and return an array.
      *
      * @return array
      */
@@ -33,13 +35,13 @@ class IniParser implements ConfigInterface
             $config = [];
             $files = scandir($this->path);
             foreach ($files as $file) {
-                if (pathinfo($file, PATHINFO_EXTENSION) === 'ini') {
-                    $config[pathinfo($file, PATHINFO_FILENAME)] = parse_ini_file($this->path . '/' . $file, true);
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'neon') {
+                    $config[pathinfo($file, PATHINFO_FILENAME)] = Neon::decode(file_get_contents($this->path . '/' . $file));
                 }
             }
             return $config;
         } else {
-            return parse_ini_file($this->path, true);
+            return Neon::decode(file_get_contents($this->path));
         }
     }
 

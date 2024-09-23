@@ -7,7 +7,8 @@
         "json",
         "ini",
         "php",
-        "array"
+        "array",
+        "dotenv"
     ],
     "license": "MIT",
     "authors": [
@@ -18,11 +19,20 @@
     ],
     "require": {
         "php": ">=8.2",
+        "nette/neon": "^3.4",
         "symfony/yaml": "7.0.*"
+    },
+    "require-dev": {
+        "nette/tester": "^2.5",
+        "phpstan/phpstan": "^1.12"
     },
     "autoload": {
       "psr-4": {
         "Dikki\\Config\\": "src/"
       }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
     }
 }
