@@ -16,6 +16,7 @@ class ConfigFetcher
 {
     private string $path;
     private array $parsers;
+    private array $configCache = [];
 
     public function __construct(string $path)
     {
@@ -35,21 +36,31 @@ class ConfigFetcher
      *
      * @return array
      */
-    public function fetch(): array
+    public function fetchAllConfigs(): array
     {
+        if (!empty($this->configCache)) {
+            return $this->configCache;
+        }
+
         $config = [];
         $files = $this->getFiles($this->path);
 
         foreach ($files as $file) {
             $extension = pathinfo($file, PATHINFO_EXTENSION);
+            $filename = pathinfo($file, PATHINFO_FILENAME);
             if (isset($this->parsers[$extension])) {
                 $parserClass = $this->parsers[$extension];
                 $parser = new $parserClass($file);
                 $parsedConfig = $parser->parse();
-                $config = $this->mergeConfigs($config, $parsedConfig);
+                if ($extension === 'env') {
+                    $config = array_merge($config, $parsedConfig);
+                } else {
+                    $config[$filename] = $parsedConfig;
+                }
             }
         }
 
+        $this->configCache = $config;
         return $config;
     }
 
@@ -81,26 +92,6 @@ class ConfigFetcher
     }
 
     /**
-     * Merge two configuration arrays, preserving nested keys.
-     *
-     * @param array $baseConfig
-     * @param array $newConfig
-     * @return array
-     */
-    private function mergeConfigs(array $baseConfig, array $newConfig): array
-    {
-        foreach ($newConfig as $key => $value) {
-            if (is_array($value) && isset($baseConfig[$key]) && is_array($baseConfig[$key])) {
-                $baseConfig[$key] = $this->mergeConfigs($baseConfig[$key], $value);
-            } else {
-                $baseConfig[$key] = $value;
-            }
-        }
-
-        return $baseConfig;
-    }
-
-    /**
      * Get a specific configuration value by key using dot notation.
      *
      * @param string $key
@@ -109,17 +100,29 @@ class ConfigFetcher
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        $config = $this->fetch();
+        $config = $this->fetchAllConfigs();
         $keys = explode('.', $key);
-
+        
+        if (count($keys) === 1) {
+            return $config[$key] ?? $default;
+        }
+        
+        $filename = array_shift($keys);
+        
+        if (!isset($config[$filename])) {
+            return $default;
+        }
+        
+        $value = $config[$filename];
+        
         foreach ($keys as $keyPart) {
-            if (is_array($config) && array_key_exists($keyPart, $config)) {
-                $config = $config[$keyPart];
+            if (is_array($value) && array_key_exists($keyPart, $value)) {
+                $value = $value[$keyPart];
             } else {
                 return $default;
             }
         }
 
-        return $config;
+        return $value;
     }
 }

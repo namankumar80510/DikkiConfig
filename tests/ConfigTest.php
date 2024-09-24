@@ -16,11 +16,11 @@ $configDir = __DIR__ . '/config';
 
 $configFetcher = new ConfigFetcher($configDir);
 $dotenvConfig = new Config(new DotEnvParser($configDir . '/.env'));
-$iniConfig = new Config(new IniParser($configDir . '/iniconfig.ini'));
-$jsonConfig = new Config(new JsonParser($configDir . '/jsonconfig.json'));
-$neonConfig = new Config(new NeonParser($configDir . '/neonconfig.neon'));
-$phpConfig = new Config(new PhpArrayParser($configDir . '/phpconfig.php'));
-$yamlConfig = new Config(new YamlParser($configDir . '/yamlconfig.yaml'));
+$iniConfig = new Config(new IniParser($configDir . '/links.ini'));
+$jsonConfig = new Config(new JsonParser($configDir . '/person.json'));
+$neonConfig = new Config(new NeonParser($configDir . '/development.neon'));
+$phpConfig = new Config(new PhpArrayParser($configDir . '/settings.php'));
+$yamlConfig = new Config(new YamlParser($configDir . '/views.yaml'));
 
 // test
 Assert::equal($dotenvConfig->get('APP_NAME'), "Sample App");
@@ -32,10 +32,10 @@ Assert::equal($yamlConfig->get('app.theme'), "Default");
 
 // all
 Assert::equal($configFetcher->get('APP_NAME'), "Sample App");
-Assert::equal($configFetcher->get('app.author'), "Naman");
-Assert::equal($configFetcher->get('app.url'), "https://example.com");
-Assert::equal($configFetcher->get('app.debug'), false);
-Assert::equal($configFetcher->get('app.timezone'), "Asia/Kolkata");
-Assert::equal($configFetcher->get('app.theme'), "Default");
+Assert::equal($configFetcher->get('person.app.author'), "Naman");
+Assert::equal($configFetcher->get('links.app.url'), "https://example.com");
+Assert::equal($configFetcher->get('development.app.debug'), false);
+Assert::equal($configFetcher->get('settings.app.timezone'), "Asia/Kolkata");
+Assert::equal($configFetcher->get('views.app.theme'), "Default");
 
-var_dump($configFetcher->fetch());
+var_dump($configFetcher->fetchAllConfigs());
